@@ -22,6 +22,15 @@ constructor(
         } catch (e: Exception){
             emit(DataState.Error(e))
         }
+    }
 
+    suspend fun addUser(user: User) = flow {
+        emit(DataState.Loading)
+        try {
+            val line = usersDao.insert(mapper.fromBaseToEntity(user))
+            emit(DataState.Success<Long>(line))
+        } catch (e: Exception) {
+            emit(DataState.Error(e))
+        }
     }
 }
