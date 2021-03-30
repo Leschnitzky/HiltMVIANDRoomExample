@@ -28,7 +28,7 @@ constructor(
         emit(DataState.Loading)
         try {
             val line = usersDao.insert(mapper.fromBaseToEntity(user))
-            emit(DataState.Success<Long>(line))
+            emit(DataState.Success(line))
         } catch (e: Exception) {
             emit(DataState.Error(e))
         }

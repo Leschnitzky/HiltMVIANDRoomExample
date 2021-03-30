@@ -7,7 +7,6 @@ import javax.inject.Inject
 class RoomEntityMapper @Inject constructor(): EntityMapper<User, UserCacheEntity> {
     override fun fromBaseToEntity(base: User): UserCacheEntity {
         return UserCacheEntity(
-                uid =  base.id,
             userLogin = base.username,
             password = base.password
         )
@@ -15,7 +14,6 @@ class RoomEntityMapper @Inject constructor(): EntityMapper<User, UserCacheEntity
 
     override fun fromEntityToBase(entity: UserCacheEntity): User {
         return User(
-                id = entity.uid,
             username = entity.userLogin,
             password = entity.password
         )

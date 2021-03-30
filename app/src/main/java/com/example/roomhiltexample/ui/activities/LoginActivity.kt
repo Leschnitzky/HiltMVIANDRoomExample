@@ -2,10 +2,7 @@ package com.example.roomhiltexample.ui.activities
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 
 import androidx.appcompat.app.AppCompatActivity
 
@@ -39,23 +36,43 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         subscribeObservers()
         loginButton.setOnClickListener {
-            val user = User(0,userEditText.text.toString(),passEditText.text.toString())
+            val user = User(userEditText.text.toString(),passEditText.text.toString())
             viewModel.emitIntentWithUser(MainIntent.AddUser, user)
-            viewModel.emitIntent(MainIntent.GetUserEvents)
         }
         viewModel.emitIntent(MainIntent.GetUserEvents)
     }
 
 
     private fun subscribeObservers() {
-        viewModel.dataState.observe(this, Observer {
-            dataState ->
-            when(dataState){
+        viewModel.totalUserDataState.observe(this, Observer { dataState ->
+            when (dataState) {
                 is DataState.Success<List<User>> -> {
                     progressBar.visibility = View.GONE
                     errorText.visibility = View.GONE
                     recyclerView.layoutManager = LinearLayoutManager(this)
                     recyclerView.adapter = MyAdapter(dataState.data.toTypedArray())
+                }
+                
+                is DataState.Error -> {
+                    progressBar.visibility = View.GONE
+                    errorText.text = dataState.exception.message
+                    errorText.visibility = View.VISIBLE
+                }
+
+                is DataState.Loading -> {
+                    progressBar.visibility = View.VISIBLE
+                    errorText.visibility = View.GONE
+                }
+            }
+        })
+        
+        viewModel.addedToDb.observe(this, Observer { dataState ->
+            when (dataState) {
+                is DataState.Success<Long> -> {
+                    progressBar.visibility = View.GONE
+                    errorText.visibility = View.GONE
+                    Toast.makeText(this, "Added user!", Toast.LENGTH_SHORT).show()
+                    viewModel.emitIntent(MainIntent.GetUserEvents)
                 }
 
                 is DataState.Error -> {

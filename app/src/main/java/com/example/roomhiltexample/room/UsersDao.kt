@@ -8,7 +8,7 @@ import androidx.room.Query
 @Dao
 interface UsersDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert()
     suspend fun insert(userRoomEntity: UserCacheEntity) : Long
 
     @Query("SELECT * FROM users")

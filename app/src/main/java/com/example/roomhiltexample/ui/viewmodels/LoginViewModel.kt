@@ -17,9 +17,13 @@ class LoginViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val userRepository: UserRepository
     ) : ViewModel() {
-        private val _dataState : MutableLiveData<DataState<List<User>>> = MutableLiveData()
-        val dataState: LiveData<DataState<List<User>>>
-            get() =_dataState
+        private val _totalUserDataState : MutableLiveData<DataState<List<User>>> = MutableLiveData()
+        val totalUserDataState: LiveData<DataState<List<User>>>
+            get() = _totalUserDataState
+
+        private val _addedToDb : MutableLiveData<DataState<Long>> = MutableLiveData()
+        val addedToDb: LiveData<DataState<Long> >
+            get() = _addedToDb
 
         fun emitIntent(mainIntent: MainIntent){
             viewModelScope.launch {
@@ -27,7 +31,7 @@ class LoginViewModel @Inject constructor(
                     is MainIntent.GetUserEvents -> {
                         userRepository.getUsers()
                             .onEach { dataState ->
-                                _dataState.value = dataState
+                                _totalUserDataState.value = dataState
                             }
                             .launchIn(viewModelScope)
                     }
@@ -38,11 +42,14 @@ class LoginViewModel @Inject constructor(
             }
         }
 
+
     fun emitIntentWithUser(mainIntent: MainIntent, user: User){
         viewModelScope.launch {
             when (mainIntent) {
                 is MainIntent.AddUser -> {
-                    userRepository.addUser(user).launchIn(viewModelScope)
+                    userRepository.addUser(user)
+                            .onEach { addedLine -> _addedToDb.value = addedLine }
+                            .launchIn(viewModelScope)
                 }
                 is MainIntent.None -> {
 
