@@ -1,21 +1,25 @@
 package com.example.roomhiltexample.ui.viewmodels
 
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 
 import com.example.roomhiltexample.model.User
 import com.example.roomhiltexample.repository.UserRepository
 import com.example.roomhiltexample.util.DataState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val userRepository: UserRepository
+        private val userRepository: UserRepository,
+        private val savedStateHandle: SavedStateHandle
     ) : ViewModel() {
         private val _totalUserDataState : MutableLiveData<DataState<List<User>>> = MutableLiveData()
         val totalUserDataState: LiveData<DataState<List<User>>>
